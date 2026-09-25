@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Employee Organization Explorer</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background-color: #f7f0ff;
+        }
+
+        h1 {
+            text-align: center;
+            background-color: #6a1b9a;
+            color: white;
+            padding: 15px;
+        }
+
+        .project {
+            width: 600px;
+            margin: auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border: 2px solid #8e44ad;
+            border-radius: 10px;
+        }
+
+        .projectName {
+            font-size: 24px;
+            font-weight: bold;
+            color: #8e44ad;
+            padding: 10px;
+        }
+
+        .team {
+            background-color: #f3e5f5;
+            padding: 15px;
+            margin: 15px;
+            border: 1px solid #ba68c8;
+            border-radius: 8px;
+        }
+
+        .teamName {
+            font-size: 20px;
+            font-weight: bold;
+            color: #6a1b9a;
+            margin-bottom: 10px;
+        }
+
+        .employee {
+            background-color: #fff;
+            border: 1px solid #ce93d8;
+            padding: 10px;
+            margin: 8px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        .employee:hover {
+            background-color: #fce4ec;
+        }
+
+        .selected {
+            background-color: #ffcc80;
+        }
+
+        .highlight {
+            background-color: #c8e6c9;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border: 1px solid #8e44ad;
+            background-color: #ffffff;
+            color: #6a1b9a;
+            border-radius: 5px;
+        }
+
+        button:hover {
+            background-color: #e1bee7;
+        }
+
+        #output {
+            background-color: #ffffff;
+            border: 2px solid #8e44ad;
+            padding: 20px;
+            margin-top: 20px;
+            font-size: 18px;
+            border-radius: 8px;
+        }
+
+        #selectedEmployee {
+            color: #e91e63;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+
+            $(".employee").click(function () {
+
+                $(".employee").removeClass("selected");
+
+                $(this).addClass("selected");
+
+                let name = $(this).text().trim();
+
+                $("#selectedEmployee").text(name);
+
+                $("#output").html(
+                    "Selected Employee: <b>" + name + "</b>"
+                );
+            });
+
+            $("#parentTeam").click(function () {
+
+                let employee = $(".selected");
+
+                if (employee.length == 0) {
+                    alert("Please select an employee.");
+                    return;
+                }
+
+                let team = employee.parent();
+
+                let teamName = team
+                    .children(".teamName")
+                    .text()
+                    .trim();
+
+                $("#output").html(
+                    "<b>Parent Team:</b> " + teamName
+                );
+            });
+
+            $("#ancestors").click(function () {
+
+                let employee = $(".selected");
+
+                if (employee.length == 0) {
+                    alert("Please select an employee.");
+                    return;
+                }
+
+                let ancestors = employee.parents();
+
+                let teamName = employee
+                    .parent()
+                    .children(".teamName")
+                    .text()
+                    .trim();
+
+                let projectName = employee
+                    .closest(".project")
+                    .children(".projectName")
+                    .text()
+                    .trim();
+
+                $("#output").html(
+                    "<b>Parent Team:</b> " + teamName +
+                    "<br><br>" +
+                    "<b>Project:</b> " + projectName +
+                    "<br><br>" +
+                    "<b>Total Ancestors Found:</b> " +
+                    ancestors.length
+                );
+            });
+            $("#projectEmployees").click(function () {
+
+                $(".employee").removeClass("highlight");
+
+                let employee = $(".selected");
+
+                if (employee.length == 0) {
+                    alert("Please select an employee.");
+                    return;
+                }
+
+                let project = employee.closest(".project");
+
+                project.find(".employee").addClass("highlight");
+
+                $("#output").html(
+                    "<b>Project Employees:</b><br>" +
+                    "All employees in Project Alpha are highlighted."
+                );
+            });
+
+            $("#teammates").click(function () {
+
+                $(".employee").removeClass("highlight");
+
+                let employee = $(".selected");
+
+                if (employee.length == 0) {
+                    alert("Please select an employee.");
+                    return;
+                }
+
+                let teammates = employee.siblings(".employee");
+
+                teammates.addClass("highlight");
+
+                let names = "";
+
+                teammates.each(function () {
+                    names += $(this).text().trim() + "<br>";
+                });
+
+                if (names == "") {
+                    names = "No teammates found.";
+                }
+
+                $("#output").html(
+                    "<b>Teammates:</b><br><br>" + names
+                );
+            });
+            $("#senior").click(function () {
+
+                $(".employee").removeClass("highlight");
+
+                let seniorEmployees = $(".employee").filter(".senior");
+
+                seniorEmployees.addClass("highlight");
+
+                let names = "";
+
+                seniorEmployees.each(function () {
+                    names += $(this).text().trim() + "<br>";
+                });
+
+                $("#output").html(
+                    "<b>Senior Employees:</b><br><br>" + names
+                );
+            });
+
+            $("#first").click(function () {
+
+                $(".employee").removeClass("highlight");
+
+                let employee = $(".employee").first();
+
+                employee.addClass("highlight");
+
+                $("#output").html(
+                    "<b>First Employee:</b><br>" +
+                    employee.text().trim()
+                );
+            });
+            $("#last").click(function () {
+
+                $(".employee").removeClass("highlight");
+
+                let employee = $(".employee").last();
+
+                employee.addClass("highlight");
+
+                $("#output").html(
+                    "<b>Last Employee:</b><br>" +
+                    employee.text().trim()
+                );
+            });
+
+            // Show eq(1) Employee
+            $("#eq").click(function () {
+
+                $(".employee").removeClass("highlight");
+
+                let employee = $(".employee").eq(1);
+
+                employee.addClass("highlight");
+
+                $("#output").html(
+                    "<b>Employee selected using eq(1):</b><br>" +
+                    employee.text().trim()
+                );
+            });
+
+            $("#reset").click(function () {
+
+                $(".employee").removeClass("selected");
+
+                $(".employee").removeClass("highlight");
+
+                $("#selectedEmployee").text("None");
+
+                $("#output").html(
+                    "Select an employee and choose an operation."
+                );
+            });
+
+        });
+    </script>
+</head>
+
+<body>
+
+    <h1>Employee Organization Explorer</h1>
+
+    <div class="project">
+
+        <div class="projectName">
+            Project Alpha
+        </div>
+
+        <div class="team">
+
+            <div class="teamName">
+                Development Team
+            </div>
+
+            <div class="employee">
+                Dafni - Developer
+            </div>
+
+            <div class="employee senior">
+                Ananya - Senior Developer
+            </div>
+
+            <div class="employee">
+                Arjun - Developer
+            </div>
+
+        </div>
+
+        <!-- Testing Team -->
+        <div class="team">
+
+            <div class="teamName">
+                Testing Team
+            </div>
+
+            <div class="employee">
+                Keerthi - Tester
+            </div>
+
+            <div class="employee senior">
+                Harini - Senior Tester
+            </div>
+
+            <div class="employee">
+                Vishnu - Tester
+            </div>
+
+        </div>
+
+    </div>
+
+    <br>
+
+    <h3>
+        Selected Employee:
+        <span id="selectedEmployee">None</span>
+    </h3>
+
+    <button id="parentTeam">
+        Show Parent Team
+    </button>
+
+    <button id="ancestors">
+        Show All Ancestors
+    </button>
+
+    <button id="projectEmployees">
+        Show Project Employees
+    </button>
+
+    <button id="teammates">
+        Show Teammates
+    </button>
+
+    <button id="senior">
+        Show Senior Employees
+    </button>
+
+    <button id="first">
+        Show First Employee
+    </button>
+
+    <button id="last">
+        Show Last Employee
+    </button>
+
+    <button id="eq">
+        Show eq(1) Employee
+    </button>
+
+    <button id="reset">
+        Reset
+    </button>
+
+    <div id="output">
+        Select an employee and choose an operation.
+    </div>
+
+</body>
+
+</html>
